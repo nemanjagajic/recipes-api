@@ -1,5 +1,14 @@
 const { Recipe, validateRecipe } = require('../models/recipe')
 
+exports.getRecipes = async (req, res) => {
+  try {
+    const recipes = await Recipe.find();
+    return res.send(recipes);
+  } catch (err) {
+    res.status(400).send({ message: err.message })
+  }
+}
+
 exports.addRecipe = async (req, res) => {
   try {
     const { error } = validateRecipe(req.body)
