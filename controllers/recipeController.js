@@ -1,4 +1,5 @@
 const { Recipe, validateRecipe } = require('../models/recipe')
+const { Category } = require('../models/category')
 
 exports.getRecipes = async (req, res) => {
   try {
@@ -14,10 +15,17 @@ exports.addRecipe = async (req, res) => {
     const { error } = validateRecipe(req.body)
     if (error) return res.status(400).send({message: error.details[0].message})
 
+    for (const categoryId of req.body.categories) {
+      const foundCategory = await Category.findById(categoryId)
+      if (!foundCategory) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
+    }
+
     const recipe = new Recipe({
       title: req.body.title,
       shortDescription: req.body.shortDescription,
-      description: req.body.description
+      description: req.body.description,
+      categories: req.body.categories,
+      createdAt: new Date()
     })
     const addedRecipe = await recipe.save()
     return res.send(addedRecipe)
