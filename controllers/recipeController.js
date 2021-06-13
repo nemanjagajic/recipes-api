@@ -15,7 +15,13 @@ exports.addRecipe = async (req, res) => {
     const { error } = validateRecipe(req.body)
     if (error) return res.status(400).send({message: error.details[0].message})
 
-    for (const categoryId of req.body.categories) {
+    const categories = JSON.parse(req.body.categories)
+
+    if (categories.length === 0) {
+      return res.status(400).send({ message: 'Category must be selected' })
+    }
+
+    for (const categoryId of categories) {
       const foundCategory = await Category.findById(categoryId)
       if (!foundCategory) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
     }
@@ -24,7 +30,8 @@ exports.addRecipe = async (req, res) => {
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       description: req.body.description,
-      categories: req.body.categories,
+      categories,
+      images: req.file ? [req.file.filename] : [],
       createdAt: new Date()
     })
     const addedRecipe = await recipe.save()

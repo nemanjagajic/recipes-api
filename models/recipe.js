@@ -26,6 +26,10 @@ const recipeSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     required: true
+  },
+  images: {
+    type: Array,
+    required: false
   }
 })
 
@@ -40,7 +44,8 @@ function validateRecipe(recipe) {
     description: Joi.string()
       .required(),
     categories: Joi.array()
-      .required()
+      .required(),
+    images: Joi.array()
   }
 
   return Joi.validate(recipe, schema)
