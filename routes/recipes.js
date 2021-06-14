@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', recipeController.getRecipes)
-router.post('/', upload.single('image'), recipeController.addRecipe)
+router.post('/', upload.array('images'), recipeController.addRecipe)
 router.delete('/', recipeController.removeRecipe)
 
 module.exports = router

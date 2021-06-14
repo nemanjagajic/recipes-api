@@ -15,7 +15,7 @@ exports.addRecipe = async (req, res) => {
     const { error } = validateRecipe(req.body)
     if (error) return res.status(400).send({message: error.details[0].message})
 
-    const categories = JSON.parse(req.body.categories)
+    const categories = req.body.categories
 
     if (categories.length === 0) {
       return res.status(400).send({ message: 'Category must be selected' })
@@ -31,7 +31,7 @@ exports.addRecipe = async (req, res) => {
       shortDescription: req.body.shortDescription,
       description: req.body.description,
       categories,
-      images: req.file ? [req.file.filename] : [],
+      images: req.files.map(file => file.filename),
       createdAt: new Date()
     })
     const addedRecipe = await recipe.save()
