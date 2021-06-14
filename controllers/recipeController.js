@@ -31,7 +31,7 @@ exports.addRecipe = async (req, res) => {
       shortDescription: req.body.shortDescription,
       description: req.body.description,
       categories,
-      images: req.files.map(file => file.filename),
+      images: req.files.map(file => `${req.body.title.split(' ').join('-').toLowerCase().toLowerCase()}/${file.filename}`),
       createdAt: new Date()
     })
     const addedRecipe = await recipe.save()
