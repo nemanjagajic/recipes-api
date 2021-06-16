@@ -3,10 +3,11 @@ const router = express.Router()
 const recipeController = require('../controllers/recipeController')
 const multer = require('multer');
 const fs = require('fs')
+const { parseFileName } = require('../utils/helpers')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const path = `uploads/${req.body.title.split(' ').join('-').toLowerCase().toLowerCase()}/`
+    const path = `uploads/${parseFileName(req.body.title)}/`
     fs.mkdirSync(path, { recursive: true })
     cb(null, path)
   },
@@ -17,7 +18,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', recipeController.getRecipes)
-router.post('/', upload.array('images'), recipeController.addRecipe)
+// var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+router.post('/', upload.fields([{ name: 'images' }, { name: 'coverImage' }]), recipeController.addRecipe)
 router.delete('/', recipeController.removeRecipe)
 
 module.exports = router

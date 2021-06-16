@@ -1,5 +1,6 @@
 const { Recipe, validateRecipe } = require('../models/recipe')
 const { Category } = require('../models/category')
+const { parseFileName } = require('../utils/helpers')
 
 exports.getRecipes = async (req, res) => {
   try {
@@ -26,12 +27,19 @@ exports.addRecipe = async (req, res) => {
       if (!foundCategory) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
     }
 
+    const parsedFileName = parseFileName(req.body.title)
+    const coverImageName = req.files.coverImage?.length > 0 ? `${parsedFileName}/${req.files.coverImage[0].filename}` : null
+    const imageNames = req.files.images?.map(
+      file => `${parsedFileName}/${file.filename}`
+    )
+
     const recipe = new Recipe({
       title: req.body.title,
       shortDescription: req.body.shortDescription,
       description: req.body.description,
       categories,
-      images: req.files.map(file => `${req.body.title.split(' ').join('-').toLowerCase().toLowerCase()}/${file.filename}`),
+      coverImage: coverImageName,
+      images: imageNames,
       createdAt: new Date()
     })
     const addedRecipe = await recipe.save()
