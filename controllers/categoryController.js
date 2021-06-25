@@ -29,7 +29,7 @@ exports.addCategory = async (req, res) => {
 
 exports.getAllCategoryRecipes = async(req, res) => {
   try {
-    const categoryId = req.body.categoryId
+    const categoryId = req.query.categoryId
     const category = await Category.findById(categoryId)
     if (!category) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
 
