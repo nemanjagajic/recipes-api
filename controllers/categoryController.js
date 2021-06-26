@@ -1,3 +1,4 @@
+const { parseFileName } = require('../utils/helpers')
 const { Category, validateCategory } = require('../models/category')
 const { Recipe } = require('../models/recipe')
 
@@ -15,9 +16,11 @@ exports.addCategory = async (req, res) => {
     const { error } = validateCategory(req.body)
     if (error) return res.status(400).send({message: error.details[0].message})
 
+    const parsedFileName = parseFileName(req.body.title)
     const category = new Category({
       title: req.body.title,
       description: req.body.description,
+      image: req.file ? `${parsedFileName}/${req.file.filename}` : null,
       createdAt: new Date()
     })
     const addedCategory = await category.save()
