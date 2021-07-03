@@ -11,6 +11,17 @@ exports.getRecipes = async (req, res) => {
   }
 }
 
+exports.getRecipeById = async (req, res) => {
+  try {
+    const recipeId = req.query.recipeId
+    const recipe = await Recipe.findOne({ _id: recipeId })
+    if (!recipe) return res.status(400).send({ message: `Recipe with the given id doesn't exist` })
+    return res.send(recipe)
+  } catch (err) {
+    res.status(400).send({ message: err.message })
+  }
+}
+
 exports.addRecipe = async (req, res) => {
   try {
     const { error } = validateRecipe(req.body)
