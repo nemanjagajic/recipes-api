@@ -4,6 +4,7 @@ const categoryController = require('../controllers/categoryController')
 const multer = require('multer');
 const fs = require('fs')
 const { parseFileName } = require('../utils/helpers')
+const authMiddleware = require('../middleware/auth')
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 router.get('/', categoryController.getCategories)
-router.post('/', upload.single('image'), categoryController.addCategory)
+router.post('/', authMiddleware, upload.single('image'), categoryController.addCategory)
 router.get('/recipes', categoryController.getAllCategoryRecipes)
 
 module.exports = router
