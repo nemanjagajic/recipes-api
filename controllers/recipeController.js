@@ -1,6 +1,7 @@
 const { Recipe, validateRecipe } = require('../models/recipe')
 const { Category } = require('../models/category')
 const { parseFileName } = require('../utils/helpers')
+const fs = require('fs')
 
 exports.getRecipes = async (req, res) => {
   try {
@@ -65,6 +66,8 @@ exports.removeRecipe = async (req, res) => {
     const recipeId = req.body.recipeId
     const removedRecipe = await Recipe.findOneAndDelete({ _id: recipeId })
     if (!removedRecipe) return res.status(400).send({ message: `Recipe with the given id doesn't exist` })
+    const parsedFileName = parseFileName(removedRecipe.title)
+    fs.rmdirSync(`uploads/${parsedFileName}`, { recursive: true });
     return res.send(removedRecipe)
   } catch (err) {
     res.status(400).send({ message: err.message })
