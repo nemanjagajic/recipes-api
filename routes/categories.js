@@ -21,5 +21,6 @@ const upload = multer({ storage });
 router.get('/', categoryController.getCategories)
 router.post('/', authMiddleware, upload.single('image'), categoryController.addCategory)
 router.get('/recipes', categoryController.getAllCategoryRecipes)
+router.delete('/', authMiddleware, categoryController.markCategoryAsDeleted)
 
 module.exports = router

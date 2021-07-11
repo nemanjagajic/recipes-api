@@ -4,7 +4,7 @@ const { Recipe } = require('../models/recipe')
 
 exports.getCategories = async (req, res) => {
   try {
-    const categories = await Category.find();
+    const categories = await Category.find({ show: true });
     return res.send(categories);
   } catch (err) {
     res.status(400).send({ message: err.message })
@@ -39,6 +39,17 @@ exports.getAllCategoryRecipes = async(req, res) => {
     const allRecipes = await Recipe.find()
     const filteredRecipes = allRecipes.filter(recipe => recipe.categories.includes(categoryId))
     return res.send(filteredRecipes)
+  } catch (err) {
+    res.status(400).send({ message: err.message })
+  }
+}
+
+exports.markCategoryAsDeleted = async(req, res) => {
+  try {
+    const categoryId = req.body.categoryId
+    const category = await Category.findByIdAndUpdate(categoryId, { show: false })
+    if (!category) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
+    return res.send(category)
   } catch (err) {
     res.status(400).send({ message: err.message })
   }
