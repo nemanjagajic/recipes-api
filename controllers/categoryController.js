@@ -36,7 +36,7 @@ exports.getAllCategoryRecipes = async(req, res) => {
     const category = await Category.findById(categoryId)
     if (!category) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
 
-    const allRecipes = await Recipe.find()
+    const allRecipes = await Recipe.find().sort({ createdAt: -1 })
     const filteredRecipes = allRecipes.filter(recipe => recipe.categories.includes(categoryId))
     return res.send(filteredRecipes)
   } catch (err) {

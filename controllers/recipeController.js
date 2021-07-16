@@ -5,7 +5,7 @@ const fs = require('fs')
 
 exports.getRecipes = async (req, res) => {
   try {
-    const recipes = await Recipe.find();
+    const recipes = await Recipe.find().sort({ createdAt: -1 })
     return res.send(recipes);
   } catch (err) {
     res.status(400).send({ message: err.message })
