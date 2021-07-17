@@ -44,7 +44,7 @@ exports.addRecipe = async (req, res) => {
       ? `uploads/${parseFileName(req.body.title)}/${req.files.coverImage[0].originalname}`
       : null
     const categoryImageDestination = req.files.coverImage?.length > 0
-      ? `uploads/${parseFileName(req.body.title)}/resized_${req.files.coverImage[0].originalname}`
+      ? `uploads/${parseFileName(req.body.title)}/cover_resized_${req.files.coverImage[0].originalname}`
       : null
     if (categoryImageTempDestination) {
       await sharp(categoryImageTempDestination)
@@ -52,7 +52,6 @@ exports.addRecipe = async (req, res) => {
         .toFile(
           categoryImageDestination
         )
-      fs.unlinkSync(categoryImageTempDestination)
     }
 
     if (req.files.images?.length > 0) {
@@ -70,7 +69,7 @@ exports.addRecipe = async (req, res) => {
     }
 
     const parsedFileName = parseFileName(req.body.title)
-    const coverImageName = req.files.coverImage?.length > 0 ? `${parsedFileName}/resized_${req.files.coverImage[0].filename}` : null
+    const coverImageName = req.files.coverImage?.length > 0 ? `${parsedFileName}/cover_resized_${req.files.coverImage[0].filename}` : null
     const imageNames = req.files.images?.map(
       file => `${parsedFileName}/resized_${file.filename}`
     )
