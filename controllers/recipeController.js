@@ -2,6 +2,7 @@ const { Recipe, validateRecipe } = require('../models/recipe')
 const { Category } = require('../models/category')
 const { parseFileName } = require('../utils/helpers')
 const fs = require('fs')
+const sharp = require('sharp');
 
 exports.getRecipes = async (req, res) => {
   try {
@@ -39,10 +40,39 @@ exports.addRecipe = async (req, res) => {
       if (!foundCategory) return res.status(400).send({ message: `Category with the id ${categoryId} doesn't exist` })
     }
 
+    const categoryImageTempDestination = req.files.coverImage?.length > 0
+      ? `uploads/${parseFileName(req.body.title)}/${req.files.coverImage[0].originalname}`
+      : null
+    const categoryImageDestination = req.files.coverImage?.length > 0
+      ? `uploads/${parseFileName(req.body.title)}/resized_${req.files.coverImage[0].originalname}`
+      : null
+    if (categoryImageTempDestination) {
+      await sharp(categoryImageTempDestination)
+        .jpeg({ quality: 90 })
+        .toFile(
+          categoryImageDestination
+        )
+      fs.unlinkSync(categoryImageTempDestination)
+    }
+
+    if (req.files.length > 0) {
+      for await (const image of req.files.images) {
+        const tempDestination = `uploads/${parseFileName(req.body.title)}/${image.originalname}`
+        const destination = `uploads/${parseFileName(req.body.title)}/resized_${image.originalname}`
+
+        await sharp(tempDestination)
+          .jpeg({quality: 90})
+          .toFile(
+            destination
+          )
+        fs.unlinkSync(tempDestination)
+      }
+    }
+
     const parsedFileName = parseFileName(req.body.title)
-    const coverImageName = req.files.coverImage?.length > 0 ? `${parsedFileName}/${req.files.coverImage[0].filename}` : null
+    const coverImageName = req.files.coverImage?.length > 0 ? `${parsedFileName}/resized_${req.files.coverImage[0].filename}` : null
     const imageNames = req.files.images?.map(
-      file => `${parsedFileName}/${file.filename}`
+      file => `${parsedFileName}/resized_${file.filename}`
     )
 
     const recipe = new Recipe({
