@@ -55,7 +55,7 @@ exports.addRecipe = async (req, res) => {
       fs.unlinkSync(categoryImageTempDestination)
     }
 
-    if (req.files.length > 0) {
+    if (req.files.images?.length > 0) {
       for await (const image of req.files.images) {
         const tempDestination = `uploads/${parseFileName(req.body.title)}/${image.originalname}`
         const destination = `uploads/${parseFileName(req.body.title)}/resized_${image.originalname}`
